@@ -3,22 +3,13 @@ import datetime
 import numpy as np
 from scipy.io import wavfile
 
-''' 
-#Example Location:
-    'Cachiyuyo, Chile': {
-        'loc_network': 'IU',
-        'loc_station': 'LCO',
-        'loc_code': '10'
-    }
-'''
-
 class SeismicStation:
     def __init__(self, network, station, location):
         self.network = network
         self.station = station
         self.location = location
 
-def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ', get_plot=False):
+def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     '''
     Params:
     -seismic_station: (SEISMIC_STATION OBJECT) seismic station object
