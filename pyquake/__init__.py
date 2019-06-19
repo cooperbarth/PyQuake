@@ -29,7 +29,8 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
             return False
 
     assert seismic_station.network and seismic_station.station and seismic_station.location, "seismic_station must be a valid instance of the SeismicStation class."
-    assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the datetime module."
+    assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the Python datetime module."
+    assert start_datetime < datetime.datetime.now(), "start_datetime cannot be in the future."
     assert isNumber(duration), "Please enter a valid duration."
     assert channel in ['BHZ', 'LHZ'], "Only BHZ and LHZ channels are supported."
 
