@@ -106,7 +106,3 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
     wavfile.write(soundname, int(sampling_rate), s32)
 
     return s32
-
-station = SeismicStation('IU', 'LCO', '10')
-s = getRawData(station, datetime.datetime(2019, 6, 1))[0]
-generateAudioFile(s)
