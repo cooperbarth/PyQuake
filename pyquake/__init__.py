@@ -33,9 +33,9 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the Python datetime module."
     assert start_datetime < datetime.datetime.now(), "start_datetime cannot be in the future."
     assert isNumber(duration), "Please enter a valid duration."
-    assert channel in ['BHZ', 'LHZ'], "Only BHZ and LHZ channels are supported."
+    assert channel in ["BHZ", "LHZ"], "Only BHZ and LHZ channels are supported."
 
-    network = '?net=' + seismic_station.network
+    network = "?net=" + seismic_station.network
     station = "&sta=" + seismic_station.station
     location = "&loc=" + seismic_station.location
     channel = "&cha=" + channel
@@ -53,14 +53,14 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     try:
         ws = urllib.urlopen(iris_url)
     except:
-        raise Exception('ERROR: Could not retrieve data from IRIS.')
+        raise Exception("ERROR: Could not retrieve data from IRIS.")
 
     print("Loading Data...")
     try:
         df = ws.read().decode()
         dflines = df.split('\n')
     except:
-        raise Exception('ERROR: Data could not be parsed.')
+        raise Exception("ERROR: Data could not be parsed.")
 
     return dflines[0], [float(i) for i in dflines[1:] if isNumber(i)]
 
