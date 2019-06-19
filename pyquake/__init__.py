@@ -9,6 +9,7 @@ class SeismicStation:
         self.station = station
         self.location = location
 
+#Takes in station and time info and returns an array representation of audio.
 def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     '''
     Params:
@@ -52,17 +53,18 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     try:
         ws = urllib.urlopen(iris_url)
     except:
-        raise Exception('Error retrieving data from IRIS.')
+        raise Exception('ERROR: Could not retrieve data from IRIS.')
 
     print("Loading Data...")
     try:
         df = ws.read().decode()
         dflines = df.split('\n')
     except:
-        raise Exception('Data is malformed or corrupted and could not be parsed.')
+        raise Exception('ERROR: Data could not be parsed.')
 
     return dflines[0], [float(i) for i in dflines[1:] if isNumber(i)]
 
+#Saves an audio file generated from an array representation to the working directory
 def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio', amp_level=1):
     '''
     Params:
