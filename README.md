@@ -7,7 +7,7 @@ Download: `python3 -m pip install pyquake`
 
 ## Code Example:
 ```
-import pyquake
+import pyquake, datetime
 
 seismic_station = pyquake.SeismicStation("IU", "LCO", "10")
 header, raw_data = pyquake.getRawData(seismic_station, datetime.datetime(2019, 6, 1), duration=3600)
