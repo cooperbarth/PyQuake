@@ -3,6 +3,7 @@ import datetime
 import numpy as np
 from scipy.io import wavfile
 
+#https://earthquake.usgs.gov/monitoring/operations/network.php?virtual_network=GSN
 class SeismicStation:
     def __init__(self, network, station, location):
         self.network = network
@@ -49,7 +50,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     iris_footer = "&demean=true&scale=auto&output=ascii1"
     iris_url = iris_url_header + iris_body + iris_datetime + iris_footer
 
-    print("Requesting data from IRIS...")
+    print(f"Requesting data from IRIS at {iris_url}")
     try:
         ws = urllib.urlopen(iris_url)
     except:
@@ -78,15 +79,8 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
     '''
     assert amp_level <= 1 and amp_level > 0, 'Amplitude Level must be greater than 0 and less than or equal to 1.'
 
-    def isNumber(num):
-        try:
-            float(num)
-            return True
-        except:
-            return False
-
     max_point = max(sound_array)
-    if (len(sound_array)) <= 2 or not isNumber(max_point):
+    if (len(sound_array)) <= 2:
         print("WARNING: The function getRawData returns a tuple containing the request header and the audio array. Make sure to pass in the correct value.")
         return
     scaled_amp = max(sound_array) * amp_level
@@ -100,3 +94,7 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
     wavfile.write(soundname, int(sampling_rate), s32)
 
     return s32
+
+station = SeismicStation('IU', 'LVC', '--')
+header, arr = getRawData(station, datetime.datetime(2019, 6, 1))
+wav = generateAudioFile(arr)
