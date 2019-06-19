@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyquake",
-    version="1.0.0",
+    version="1.0.2",
     author="Cooper Barth",
     author_email="cooperfbarth@gmail.com",
     description="A package enabling the synthesis of seismic audio.",
