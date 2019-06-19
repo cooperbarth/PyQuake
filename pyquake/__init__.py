@@ -18,7 +18,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     -channel: (STRING, OPTIONAL) channel from which the data is taken (controls # of points)
 
     Returns:
-    -An tuple containing an the header for the response and an array containing the magnitude sound data at each time interval
+    -A tuple containing the header for the IRIS response and an array containing the magnitude sound data.
     '''
 
     def isNumber(num):
