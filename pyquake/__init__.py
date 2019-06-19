@@ -3,22 +3,14 @@ import datetime
 import numpy as np
 from scipy.io import wavfile
 
-''' 
-#Example Location:
-    'Cachiyuyo, Chile': {
-        'loc_network': 'IU',
-        'loc_station': 'LCO',
-        'loc_code': '10'
-    }
-'''
-
 class SeismicStation:
     def __init__(self, network, station, location):
         self.network = network
         self.station = station
         self.location = location
 
-def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ', get_plot=False):
+#Takes in station and time info and returns an array representation of audio.
+def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     '''
     Params:
     -seismic_station: (SEISMIC_STATION OBJECT) seismic station object
@@ -27,7 +19,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ', ge
     -channel: (STRING, OPTIONAL) channel from which the data is taken (controls # of points)
 
     Returns:
-    -An tuple containing an the header for the response and an array containing the magnitude sound data at each time interval
+    -A tuple containing the header for the IRIS response and an array containing the magnitude sound data.
     '''
 
     def isNumber(num):
@@ -38,11 +30,12 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ', ge
             return False
 
     assert seismic_station.network and seismic_station.station and seismic_station.location, "seismic_station must be a valid instance of the SeismicStation class."
-    assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the datetime module."
+    assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the Python datetime module."
+    assert start_datetime < datetime.datetime.now(), "start_datetime cannot be in the future."
     assert isNumber(duration), "Please enter a valid duration."
-    assert channel in ['BHZ', 'LHZ'], "Only BHZ and LHZ channels are supported."
+    assert channel in ["BHZ", "LHZ"], "Only BHZ and LHZ channels are supported."
 
-    network = '?net=' + seismic_station.network
+    network = "?net=" + seismic_station.network
     station = "&sta=" + seismic_station.station
     location = "&loc=" + seismic_station.location
     channel = "&cha=" + channel
@@ -60,17 +53,18 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ', ge
     try:
         ws = urllib.urlopen(iris_url)
     except:
-        raise Exception('Error retrieving data from IRIS.')
+        raise Exception("ERROR: Could not retrieve data from IRIS.")
 
     print("Loading Data...")
     try:
         df = ws.read().decode()
         dflines = df.split('\n')
     except:
-        raise Exception('Data is malformed or corrupted and could not be parsed.')
+        raise Exception("ERROR: Data could not be parsed.")
 
     return dflines[0], [float(i) for i in dflines[1:] if isNumber(i)]
 
+#Saves an audio file generated from an array representation to the working directory
 def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio', amp_level=1):
     '''
     Params:
