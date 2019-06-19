@@ -1,6 +1,8 @@
 # PyQuake
 ## A Python Library for Seismic Sonification
 
+`python3 -m pip install pyquake`
+
 This is an easy-to-use Python library for seismic sonification using the IRIS Timeseries Web Service.
 
 IRIS Timeseries documentation: http://service.iris.edu/irisws/timeseries/1/
