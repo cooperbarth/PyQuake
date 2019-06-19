@@ -1,5 +1,5 @@
 # PyQuake
-## A Python Library for Seismic Sonification
+## A Python Package for Seismic Sonification
 
 An easy-to-use open-source Python library for seismic sonification using the IRIS Timeseries Web Service.
 
