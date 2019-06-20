@@ -12,7 +12,8 @@ setuptools.setup(
     install_requires=[
         'numpy',
         'scipy',
-        'urllib'
+        'urllib',
+        'BeautifulSoup4'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

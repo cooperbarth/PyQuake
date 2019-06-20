@@ -2,9 +2,10 @@ import urllib.request as urllib
 import datetime
 import numpy as np
 from scipy.io import wavfile
+from bs4 import BeautifulSoup
 
-# GSN Stations: https://earthquake.usgs.gov/monitoring/operations/network.php?virtual_network=GSN
 # IRIS DMC: https://ds.iris.edu/cgi-bin/seismiquery/bin/station.pl
+# fdsnws-station query: http://service.iris.edu/fdsnws/station/1/
 class SeismicStation:
     def __init__(self, network, station, location="", name="", latitude=0.0, longitude=0.0):
         self.network = network
@@ -16,8 +17,39 @@ class SeismicStation:
     
     def __repr__(self):
         return self.name if self.name != '' else self.network
-#location may be specified if they want to check a specific one, otherwise it should loop yhrough --, 00, 10, 20
-#Example: https://ds.iris.edu/mda/IU/ANMO/?starttime=1989-08-29&endtime=2599-12-31
+
+#basically just an alias for makeIrisRequest
+def getAllStations():
+    return makeIrisStationRequest()
+
+def getStations(network="", station=""):
+    params = f"{f'&net={network}' if network else ''}{f'&sta={station}' if station else ''}"
+    return makeIrisStationRequest(params)
+
+def makeIrisStationRequest(params=''):
+    try:
+        ws = urllib.urlopen("http://service.iris.edu/fdsnws/station/1/query?format=text" + params)
+    except:
+        raise Exception("ERROR: Could not retrieve data from IRIS.")
+
+    try:
+        ws_arr = ws.read().decode().split("\n")
+    except:
+        raise Exception("ERROR: Data could not be parsed.")
+
+    if len(ws_arr) == 1: #only header was returned
+        return []
+
+    station_arr = []
+    for station in ws_arr[1:]:
+        if station:
+            split_station = station.split("|")
+            new_station = SeismicStation(split_station[0], split_station[1], name=split_station[5], latitude=split_station[2], longitude=split_station[3])
+            station_arr.append(new_station)
+    return station_arr
+
+def getNearestStation(latitude, longitude, stations):
+    print("hey")
 
 #Takes in station and time info and returns an array representation of audio.
 def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
@@ -114,6 +146,8 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
 
     return s32
 
-station = SeismicStation('IU', 'ANMO')
+getStations(network="1a")
+
+'''station = SeismicStation('IU', 'ANMO')
 header, arr = getRawData(station, datetime.datetime(2019, 6, 1))
-wav = generateAudioFile(arr)
+wav = generateAudioFile(arr)'''
