@@ -39,4 +39,5 @@ _ = pyquake.generateAudioFile(raw_data, soundname="chile_seismic_audio", amp_lev
 - The scaled audio array (of equal length to the input array).
 
 IRIS Timeseries documentation: http://service.iris.edu/irisws/timeseries/1/
+
 Concept pulled from the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.

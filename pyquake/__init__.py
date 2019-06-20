@@ -3,11 +3,20 @@ import datetime
 import numpy as np
 from scipy.io import wavfile
 
+# GSN Stations: https://earthquake.usgs.gov/monitoring/operations/network.php?virtual_network=GSN
+# IRIS DMC: https://ds.iris.edu/cgi-bin/seismiquery/bin/station.pl
 class SeismicStation:
-    def __init__(self, network, station, location):
+    def __init__(self, network, station, name="", latitude=0.0, longitude=0.0):
         self.network = network
         self.station = station
-        self.location = location
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+    
+    def __repr__(self):
+        return self.name if self.name != '' else self.network
+#location may be specified if they want to check a specific one, otherwise it should loop yhrough --, 00, 10, 20
+#Example: https://ds.iris.edu/mda/IU/ANMO/?starttime=1989-08-29&endtime=2599-12-31
 
 #Takes in station and time info and returns an array representation of audio.
 def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
@@ -33,6 +42,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the Python datetime module."
     assert start_datetime < datetime.datetime.now(), "start_datetime cannot be in the future."
     assert isNumber(duration), "Please enter a valid duration."
+    assert float(duration) < 2_592_000, "Time series requested must not exceed 30 days."
     assert channel in ["BHZ", "LHZ"], "Only BHZ and LHZ channels are supported."
 
     network = "?net=" + seismic_station.network
@@ -49,7 +59,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     iris_footer = "&demean=true&scale=auto&output=ascii1"
     iris_url = iris_url_header + iris_body + iris_datetime + iris_footer
 
-    print("Requesting data from IRIS...")
+    print(f"Requesting data from IRIS at {iris_url}")
     try:
         ws = urllib.urlopen(iris_url)
     except:
@@ -78,15 +88,8 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
     '''
     assert amp_level <= 1 and amp_level > 0, 'Amplitude Level must be greater than 0 and less than or equal to 1.'
 
-    def isNumber(num):
-        try:
-            float(num)
-            return True
-        except:
-            return False
-
     max_point = max(sound_array)
-    if (len(sound_array)) <= 2 or not isNumber(max_point):
+    if (len(sound_array)) <= 2:
         print("WARNING: The function getRawData returns a tuple containing the request header and the audio array. Make sure to pass in the correct value.")
         return
     scaled_amp = max(sound_array) * amp_level
@@ -100,3 +103,7 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
     wavfile.write(soundname, int(sampling_rate), s32)
 
     return s32
+
+station = SeismicStation('IU', 'ANMO', '00')
+header, arr = getRawData(station, datetime.datetime(2019, 6, 1))
+wav = generateAudioFile(arr)
