@@ -5,13 +5,15 @@ An easy-to-use open-source Python library for seismic sonification using the IRI
 
 Download: `python3 -m pip install pyquake`
 
-## Code Examples:
+## Code Example:
 ```
-import pyquake, datetime
+import pyquake as pq, datetime
 
-seismic_station = pyquake.SeismicStation("IU", "LCO", "10")
-header, raw_data = pyquake.getRawData(seismic_station, datetime.datetime(2019, 6, 1), duration=3600)
-_ = pyquake.generateAudioFile(raw_data, soundname="chile_seismic_audio", amp_level=0.8)
+IU_stations = pq.getStations(network="IU")
+closest_IU_station = pq.getNearestStation(34.94, -106.45, IU_stations)
+
+header, raw_data = pq.getRawData(closest_IU_station, datetime.datetime(2019, 6, 1), duration=3600)
+_ = pq.generateAudioFile(raw_data, soundname=f"{repr(closest_IU_station)}_audio", amp_level=0.8)
 ```
 
 ### The *SeismicStation* class
