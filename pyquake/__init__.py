@@ -15,15 +15,27 @@ class SeismicStation:
     def __repr__(self):
         return self.name if self.name != '' else self.network
 
-#basically just an alias for makeIrisRequest
+#alias for makeIrisRequest with no params
 def getAllStations():
     return makeIrisStationRequest()
 
 def getStations(network="", station=""):
+    '''
+    Params:
+    -network: (STRING, OPTIONAL) Network code to search for. Defaults to empty, which will search all codes.
+    -station: (STRING, OPTIONAL) Station code to search for. Defaults to empty, which will search all codes.
+    '''
     params = f"{f'&net={network}' if network else ''}{f'&sta={station}' if station else ''}"
     return makeIrisStationRequest(params)
 
 def makeIrisStationRequest(params=''):
+    '''
+    Params:
+    -params: (STRING) string representation of query parameters
+
+    Returns:
+    -An array of SeismicStation objects
+    '''
     try:
         ws = urllib.urlopen("http://service.iris.edu/fdsnws/station/1/query?format=text" + params)
     except:
@@ -46,6 +58,15 @@ def makeIrisStationRequest(params=''):
     return station_arr
 
 def getNearestStation(latitude, longitude, stations):
+    '''
+    Params:
+    -latitude: (FLOAT) latitude of coordinate
+    -longitude: (FLOAT) longitude of coordinate
+    -stations: ([SeismicStation]) array of seismic stations to search through
+
+    Returns:
+    -A SeismicStation object representing the closest seismic station to the given coordinate
+    '''
     if len(stations) == 0 or not stations[0].network or not stations[0].station:
         raise Exception("stations must be a valid SeismicStation array")
     elif len(stations) == 1:
@@ -57,7 +78,10 @@ def getNearestStation(latitude, longitude, stations):
     nearest_distance = math.inf
     for station in stations[1:]:
         station_coordinate = (station.latitude, station.longitude)
-        distance = mpu.haversine_distance(test_coordinate, station_coordinate)
+        try:
+            distance = mpu.haversine_distance(test_coordinate, station_coordinate)
+        except:
+            continue
         if distance < nearest_distance:
             nearest_station = station
             nearest_distance = distance
@@ -157,12 +181,3 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
     wavfile.write(soundname, int(sampling_rate), s32)
 
     return s32
-
-
-stations = getStations(network="1A")
-nearest_station = getNearestStation(0.0, 0.0, stations)
-print(mpu.haversine_distance((nearest_station.latitude, nearest_station.longitude), (0.0, 0.0)))
-
-'''station = SeismicStation('IU', 'ANMO')
-header, arr = getRawData(station, datetime.datetime(2019, 6, 1))
-wav = generateAudioFile(arr)'''
