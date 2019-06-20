@@ -5,7 +5,7 @@ An easy-to-use open-source Python library for seismic sonification using the IRI
 
 Download: `python3 -m pip install pyquake`
 
-## Code Example:
+## Code Examples:
 ```
 import pyquake, datetime
 
@@ -15,12 +15,46 @@ _ = pyquake.generateAudioFile(raw_data, soundname="chile_seismic_audio", amp_lev
 ```
 
 ### The *SeismicStation* class
-- *network*: Network over which to pull the data from. 
-- *station*: Code for the station.
-- *location*: Regional location code for the seismic station.
-*Note: Check that your seismic station is valid at* https://ds.iris.edu/gmap/
+- *network*: Network code used by the station. 
+- *station*: Station code for the station.
+- *location* (OPTIONAL): Regional location code for the seismic station.
+- *name* (OPTIONAL): An optional alias for the station.
+- *latitude* (OPTIONAL): The latitude of the station. Defaults to 0.0.
+- *longitude* (OPTIONAL): The longitude of the station. Defaults to 0.0.
+
+
+## Station Retrieval:
+
+### *getStations*
+Returns stations in the IRIS Database with the given Network or Station codes.
+#### Parameters:
+- *network* (OPTIONAL): Network code used by the station.
+- *station* (OPTIONAL): Station code for the station.
+#### Returns:
+- An array of SeismicStation objects.
+
+### *getAllStations*
+Returns all stations in the IRIS Database. *Note: This is an alias for calling `makeIrisStationRequest` or `getStations` with no parameters.*
+#### Returns:
+- An array of SeismicStation objects.
+
+### *makeIrisStationRequest*
+Makes a GET request to the IRIS station database. *This function is called by the above function. You shouldn't call this manually unless you really know what you're doing.*
+
+### *getNearestStation*
+Returns the nearest IRIS station to a given coordinate.
+#### Parameters:
+- *latitude*: Input latitude.
+- *longitude*: Input longitude.
+- *stations*: An array of SeismicStation objects to search.
+#### Returns:
+- A SeismicStation object.
+
+
+## Seismic Data Retrieval:
 
 ### *getRawData*
+Returns the raw data from the seismic station during the specified timeframe. If the location code in the seismic station isn't specified, it will try several different codes in an attempt to find data.
 #### Parameters:
 - *seismic_station*: The seismic station object representing the station from which to pull data.
 - *start_datetime*: The datetime at which the audio sample should begin.
