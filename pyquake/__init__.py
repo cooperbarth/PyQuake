@@ -6,10 +6,11 @@ from scipy.io import wavfile
 # GSN Stations: https://earthquake.usgs.gov/monitoring/operations/network.php?virtual_network=GSN
 # IRIS DMC: https://ds.iris.edu/cgi-bin/seismiquery/bin/station.pl
 class SeismicStation:
-    def __init__(self, network, station, name="", latitude=0.0, longitude=0.0):
+    def __init__(self, network, station, location="", name="", latitude=0.0, longitude=0.0):
         self.network = network
         self.station = station
         self.name = name
+        self.location = location
         self.latitude = latitude
         self.longitude = longitude
     
@@ -31,6 +32,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     -A tuple containing the header for the IRIS response and an array containing the magnitude sound data.
     '''
 
+    supported_locations = ["--", "00", "10", "20"]
     def isNumber(num):
         try:
             float(num)
@@ -38,31 +40,39 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
         except:
             return False
 
-    assert seismic_station.network and seismic_station.station and seismic_station.location, "seismic_station must be a valid instance of the SeismicStation class."
+    assert seismic_station.network and seismic_station.station, "seismic_station must be a valid instance of the SeismicStation class."
     assert isinstance(start_datetime, datetime.datetime), "start_datetime must be a datetime created via the Python datetime module."
     assert start_datetime < datetime.datetime.now(), "start_datetime cannot be in the future."
     assert isNumber(duration), "Please enter a valid duration."
     assert float(duration) < 2_592_000, "Time series requested must not exceed 30 days."
     assert channel in ["BHZ", "LHZ"], "Only BHZ and LHZ channels are supported."
 
-    network = "?net=" + seismic_station.network
-    station = "&sta=" + seismic_station.station
-    location = "&loc=" + seismic_station.location
-    channel = "&cha=" + channel
+    network = f"?net={seismic_station.network}"
+    station = f"&sta={seismic_station.station}"
+    locations = supported_locations if seismic_station.location not in supported_locations else [seismic_station.location]
+    channel = f"&cha={channel}"
 
     date = "&starttime=" + str(start_datetime.date())
     time = "T" + str(start_datetime.time()).split('.')[0]
 
     iris_url_header = "http://service.iris.edu/irisws/timeseries/1/query"
-    iris_body = network + station + location + channel
     iris_datetime = date + time + "&duration=" + str(int(duration))
     iris_footer = "&demean=true&scale=auto&output=ascii1"
-    iris_url = iris_url_header + iris_body + iris_datetime + iris_footer
 
-    print(f"Requesting data from IRIS at {iris_url}")
-    try:
-        ws = urllib.urlopen(iris_url)
-    except:
+    print(f"Requesting data from IRIS...")
+    ws = None
+    for location in locations:
+        if len(locations) > 1:
+            print(f"Trying location {location} for station {seismic_station.station}...")
+        iris_body = network + station + f"&loc={location}" + channel
+        iris_url = iris_url_header + iris_body + iris_datetime + iris_footer
+  
+        try:
+            ws = urllib.urlopen(iris_url)
+            break
+        except:
+            continue
+    if ws is None:
         raise Exception("ERROR: Could not retrieve data from IRIS.")
 
     print("Loading Data...")
@@ -104,6 +114,6 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
 
     return s32
 
-station = SeismicStation('IU', 'ANMO', '00')
+station = SeismicStation('IU', 'ANMO')
 header, arr = getRawData(station, datetime.datetime(2019, 6, 1))
 wav = generateAudioFile(arr)
