@@ -7,17 +7,13 @@ class SeismicStation:
     def __init__(self, network, station, location="", name="", latitude=0.0, longitude=0.0):
         self.network = network
         self.station = station
-        self.name = name
         self.location = location
+        self.name = name
         self.latitude = latitude
         self.longitude = longitude
     
     def __repr__(self):
         return self.name if self.name != '' else self.network
-
-#alias for makeIrisRequest with no params
-def getAllStations():
-    return makeIrisStationRequest()
 
 def getStations(network="", station=""):
     '''
@@ -27,6 +23,10 @@ def getStations(network="", station=""):
     '''
     params = f"{f'&net={network}' if network else ''}{f'&sta={station}' if station else ''}"
     return makeIrisStationRequest(params)
+
+#alias for calling makeIrisRequest() or getStations()
+def getAllStations():
+    return makeIrisStationRequest()
 
 def makeIrisStationRequest(params=''):
     '''
@@ -39,6 +39,7 @@ def makeIrisStationRequest(params=''):
     try:
         ws = urllib.urlopen("http://service.iris.edu/fdsnws/station/1/query?format=text" + params)
     except:
+        #this is called if no data is found
         raise Exception("ERROR: Could not retrieve data from IRIS.")
 
     try:
