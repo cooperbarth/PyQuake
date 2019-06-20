@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="pyquake",
-    version="1.0.3",
+    version="1.0.4",
     author="Cooper Barth",
     author_email="cooperfbarth@gmail.com",
     description="A package enabling the synthesis of seismic audio.",
@@ -12,7 +12,6 @@ setuptools.setup(
     install_requires=[
         'numpy',
         'scipy',
-        'urllib',
         'mpu'
     ],
     classifiers=[
@@ -21,3 +20,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
 )
+
+'''
+PACKAGING:
+python3 setup.py sdist bdist_wheel
+python3 -m twine upload dist/*
+'''
