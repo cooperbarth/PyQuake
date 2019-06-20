@@ -1,11 +1,8 @@
 import urllib.request as urllib
-import datetime
+import datetime, math, mpu
 import numpy as np
 from scipy.io import wavfile
-from bs4 import BeautifulSoup
 
-# IRIS DMC: https://ds.iris.edu/cgi-bin/seismiquery/bin/station.pl
-# fdsnws-station query: http://service.iris.edu/fdsnws/station/1/
 class SeismicStation:
     def __init__(self, network, station, location="", name="", latitude=0.0, longitude=0.0):
         self.network = network
@@ -44,12 +41,27 @@ def makeIrisStationRequest(params=''):
     for station in ws_arr[1:]:
         if station:
             split_station = station.split("|")
-            new_station = SeismicStation(split_station[0], split_station[1], name=split_station[5], latitude=split_station[2], longitude=split_station[3])
+            new_station = SeismicStation(split_station[0], split_station[1], name=split_station[5], latitude=float(split_station[2]), longitude=float(split_station[3]))
             station_arr.append(new_station)
     return station_arr
 
 def getNearestStation(latitude, longitude, stations):
-    print("hey")
+    if len(stations) == 0 or not stations[0].network or not stations[0].station:
+        raise Exception("stations must be a valid SeismicStation array")
+    elif len(stations) == 1:
+        return stations[0]
+
+    test_coordinate = (latitude, longitude)
+
+    nearest_station = stations[0]
+    nearest_distance = math.inf
+    for station in stations[1:]:
+        station_coordinate = (station.latitude, station.longitude)
+        distance = mpu.haversine_distance(test_coordinate, station_coordinate)
+        if distance < nearest_distance:
+            nearest_station = station
+            nearest_distance = distance
+    return nearest_station
 
 #Takes in station and time info and returns an array representation of audio.
 def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
@@ -146,7 +158,10 @@ def generateAudioFile(sound_array, sampling_rate=44100, soundname='pyquake_audio
 
     return s32
 
-getStations(network="1a")
+
+stations = getStations(network="1A")
+nearest_station = getNearestStation(0.0, 0.0, stations)
+print(mpu.haversine_distance((nearest_station.latitude, nearest_station.longitude), (0.0, 0.0)))
 
 '''station = SeismicStation('IU', 'ANMO')
 header, arr = getRawData(station, datetime.datetime(2019, 6, 1))

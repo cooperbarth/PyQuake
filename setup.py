@@ -13,7 +13,7 @@ setuptools.setup(
         'numpy',
         'scipy',
         'urllib',
-        'BeautifulSoup4'
+        'mpu'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
