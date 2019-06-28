@@ -1,7 +1,7 @@
 # PyQuake
 ## A Python Package for Seismic Sonification
 
-An easy-to-use open-source Python library for seismic sonification using the IRIS Timeseries Web Service.
+An easy-to-use open-source Python library for seismic sonification using the IRIS Timeseries Web Service. Concept pulled from the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.
 
 Download: `python3 -m pip install pyquake`
 
@@ -75,5 +75,3 @@ Returns the raw data from the seismic station during the specified timeframe. If
 - The scaled audio array (of equal length to the input array).
 
 IRIS Timeseries documentation: http://service.iris.edu/irisws/timeseries/1/
-
-Concept pulled from the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.
