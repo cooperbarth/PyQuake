@@ -128,7 +128,7 @@ def getRawData(seismic_station, start_datetime, duration=3600, channel='BHZ'):
     iris_datetime = date + time + "&duration=" + str(int(duration))
     iris_footer = "&demean=true&scale=auto&output=ascii1"
 
-    print(f"Requesting data from IRIS...")
+    print("Requesting data from IRIS...")
     ws = None
     for location in locations:
         if len(locations) > 1:
