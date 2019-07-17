@@ -1,7 +1,7 @@
 # PyQuake
 ## A Python Package for Seismic Sonification
 
-An lightweight Python package for seismic sonification using the IRIS Timeseries Web Service. Concept from the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.
+PyQuake is a lightweight Python package for seismic sonification that uses the IRIS Timeseries Web Service to retrieve seismic data and convert it into audio. Concept from the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.
 
 Download: `python3 -m pip install pyquake`
 
