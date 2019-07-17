@@ -1,7 +1,7 @@
 # PyQuake
 ## A Python Package for Seismic Sonification
 
-PyQuake is a lightweight Python package for seismic sonification that uses the IRIS Timeseries Web Service to retrieve seismic data and convert it into audio. This package exists mainly as a modular extension of the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.
+PyQuake is a lightweight Python package for seismic sonification that uses the [IRIS Timeseries API](http://service.iris.edu/irisws/timeseries/1/) to retrieve seismic data and convert it into audio. This package exists mainly as a modular extension of the [Earthtunes](https://github.com/cooperbarth/Earthtunes) project.
 
 Download: `python3 -m pip install pyquake`
 
@@ -73,5 +73,3 @@ Returns the raw data from the seismic station during the specified timeframe. If
 - *amp_level*: A scaling factor to control track amplitude, and thus relative volume. Falls between 0 (exclusive) and 1 (inclusive). Defaults to 1.
 #### Returns:
 - The scaled audio array (of equal length to the input array).
-
-IRIS Timeseries documentation: http://service.iris.edu/irisws/timeseries/1/
